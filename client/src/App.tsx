@@ -1,12 +1,15 @@
 import React from "react";
-import Header from "./components/Header/Header";
-import { BodyContent } from "./components/Homepage-body/BodyContent";
+import { Route, Routes } from "react-router-dom";
+import { PAGE_ROUTES } from "./util/routes";
 
 function App() {
   return (
     <>
-      <Header />
-      <BodyContent />
+      <Routes>
+        {PAGE_ROUTES.map(({ pathname, element }) => (
+          <Route path={pathname} element={element} key={pathname} />
+        ))}
+      </Routes>
     </>
   );
 }
