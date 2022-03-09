@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { loginHandler } from "../../apollo/stores/isLogin";
 import { loginModalHandler } from "../../apollo/stores/modal-stores/loginModal";
+import { signUpModalHandler } from "../../apollo/stores/modal-stores/sigunUpModal";
 
 const ModalWrapper = styled.section`
   background: white;
@@ -30,8 +31,11 @@ const InputWrapper = styled.div`
   }
   input {
     height: 30px;
-    width: 250px;
-    border: none;
+    width: 330px;
+    display: block;
+    border-top: none;
+    border-left: none;
+    border-right: none;
   }
   input:focus {
     outline: none;
@@ -86,7 +90,15 @@ const LoginModal: React.FC<ModalProps> = ({ handleCloseModal }) => {
         </InputWrapper>
         <ButtonWrapper>
           <button type="submit">로그인</button>
-          <button type="button">회원가입</button>
+          <button
+            type="button"
+            onClick={() => {
+              signUpModalHandler(true);
+              loginModalHandler(false);
+            }}
+          >
+            회원가입
+          </button>
         </ButtonWrapper>
       </form>
     </ModalWrapper>
