@@ -6,8 +6,9 @@ import { Modal } from "../Modal/Modal";
 import writePoemModalVar, { writePoemModalHandler } from "../../apollo/stores/modal-stores/writePoemModal";
 import LoginModal from "../Modal/LoginModal";
 import WritePoemModal from "../Modal/WritePoemModal";
-import { Link } from "react-router-dom";
 import { Styled } from "../styled/style";
+import SignupModal from "../Modal/SignupModal";
+import isSignUpModalVar, { signUpModalHandler } from "../../apollo/stores/modal-stores/sigunUpModal";
 
 const HeaderBody = styled.header`
   display: flex;
@@ -48,6 +49,7 @@ const ModalWrapper = styled.div``;
 const Header = () => {
   const loginModalState = useReactiveVar(isLoginModalVar);
   const writePoemModalState = useReactiveVar(writePoemModalVar);
+  const signUpModalState = useReactiveVar(isSignUpModalVar);
   const isLogin = useReactiveVar(isLoginVar);
   return (
     <HeaderBody>
@@ -60,6 +62,11 @@ const Header = () => {
         {writePoemModalState ? (
           <Modal handleCloseModal={() => writePoemModalHandler(false)}>
             <WritePoemModal handleCloseModal={() => writePoemModalHandler(false)} />
+          </Modal>
+        ) : null}
+        {signUpModalState ? (
+          <Modal handleCloseModal={() => signUpModalHandler(false)}>
+            <SignupModal handleCloseModal={() => signUpModalHandler(false)} />
           </Modal>
         ) : null}
       </ModalWrapper>
@@ -75,7 +82,9 @@ const Header = () => {
             <button className="header__login" onClick={() => loginModalHandler(true)}>
               로그인
             </button>
-            <button className="header__signup">회원가입</button>
+            <button className="header__signup" onClick={() => signUpModalHandler(true)}>
+              회원가입
+            </button>
           </>
         ) : (
           <>
