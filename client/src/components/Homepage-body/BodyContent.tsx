@@ -111,6 +111,9 @@ export const BodyContent = () => {
           placeholder="작가이름 또는 시를 검색해보세요 "
         />
         <button onClick={() => searchTextHandler(author)}>검색</button>
+
+        <button onClick={() => setPoemList(poemData.poems)}>전체보기</button>
+
       </div>
       <BtnWrapper>
         <Button title="시 작성" onClick={() => writePoemModalHandler(true)} />
