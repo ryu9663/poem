@@ -1,6 +1,6 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 
 import { writePoemModalHandler } from "../../apollo/stores/modal-stores/writePoemModal";
 
@@ -8,6 +8,7 @@ import { GET_POEMS } from "../../apollo/queries/poems";
 import Button from "../styled/Button";
 import { PoemType } from "../../types/poem";
 import styled from "styled-components";
+import { GET_POEM_BY_AUTHOR } from "../../apollo/queries/searching";
 
 const BodyWrapper = styled.main`
   display: flex;
@@ -60,21 +61,63 @@ const PoemAuthor = styled.span`
 `;
 
 export const BodyContent = () => {
-  const { loading, error, data } = useQuery(GET_POEMS);
-  if (loading) return <span>"로딩중"</span>;
-  if (error) return <span>Error...</span>;
-  const { poems } = data;
+  const [author, setAuthor] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [poemList, setPoemList] = useState([]);
+
+  const {
+    data: searchingByAuthorData,
+    loading: searchingByAuthorLoading,
+    error: searchingByAuthorError,
+  } = useQuery(GET_POEM_BY_AUTHOR, {
+    variables: { author: searchText },
+    fetchPolicy: "network-only",
+  });
+
+  const { loading: poemLoading, error: poemError, data: poemData } = useQuery(GET_POEMS);
+
+  useEffect(() => {
+    if (!searchingByAuthorData) return;
+
+    console.log(searchingByAuthorData);
+
+    setPoemList(searchingByAuthorData.poemByAuthor);
+  }, [searchingByAuthorData]);
+
+  useEffect(() => {
+    if (!poemData) return;
+    const { poems } = poemData;
+    setPoemList(poems);
+  }, [poemData]);
+
+  if (poemLoading || searchingByAuthorLoading) return <span>"로딩중"</span>;
+  if (poemError || !poemData || searchingByAuthorError) return <span>Error...</span>;
+
+  const searchTextHandler = (text: string) => {
+    console.log(text);
+    setSearchText(text);
+  };
+
   return (
     <BodyWrapper>
       <div className="bodycontent__searchbox-wrapper">
-        <input className="bodycontent__searchbox" type="text" placeholder="작가이름 또는 시를 검색해보세요 " />
+        <input
+          className="bodycontent__searchbox"
+          value={author}
+          onChange={(e) => {
+            setAuthor(e.target.value);
+          }}
+          type="text"
+          placeholder="작가이름 또는 시를 검색해보세요 "
+        />
+        <button onClick={() => searchTextHandler(author)}>검색</button>
       </div>
       <BtnWrapper>
         <Button title="시 작성" onClick={() => writePoemModalHandler(true)} />
       </BtnWrapper>
       <PoemListWrapper>
         <PoemList>
-          {poems.map((poem: PoemType) => (
+          {poemList?.map((poem: PoemType) => (
             <div key={poem.id}>
               <PoemListComponent poem={poem} />
             </div>
