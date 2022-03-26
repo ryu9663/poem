@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 
 import React, { PropsWithChildren, useEffect, useState } from "react";
 
@@ -15,6 +15,7 @@ const BodyWrapper = styled.main`
   flex-direction: column;
   align-items: center;
   .bodycontent__searchbox-wrapper {
+    /* background: red; */
     display: flex;
     margin: 80px 10px;
     width: 600px;
@@ -65,11 +66,10 @@ export const BodyContent = () => {
   const [searchText, setSearchText] = useState("");
   const [poemList, setPoemList] = useState([]);
 
-  const {
-    data: searchingByAuthorData,
-    loading: searchingByAuthorLoading,
-    error: searchingByAuthorError,
-  } = useQuery(GET_POEM_BY_AUTHOR, {
+  const [
+    searchPoemByAuthor,
+    { data: searchingByAuthorData, loading: searchingByAuthorLoading, error: searchingByAuthorError },
+  ] = useLazyQuery(GET_POEM_BY_AUTHOR, {
     variables: { author: searchText },
     fetchPolicy: "network-only",
   });
@@ -78,15 +78,14 @@ export const BodyContent = () => {
 
   useEffect(() => {
     if (!searchingByAuthorData) return;
-
-    console.log(searchingByAuthorData);
-
+    //검색어에의한 poemList 변경
     setPoemList(searchingByAuthorData.poemByAuthor);
   }, [searchingByAuthorData]);
 
   useEffect(() => {
     if (!poemData) return;
     const { poems } = poemData;
+    //poemList는 화면에 렌더링되는 시
     setPoemList(poems);
   }, [poemData]);
 
@@ -94,8 +93,8 @@ export const BodyContent = () => {
   if (poemError || !poemData || searchingByAuthorError) return <span>Error...</span>;
 
   const searchTextHandler = (text: string) => {
-    console.log(text);
     setSearchText(text);
+    searchPoemByAuthor();
   };
 
   return (
@@ -111,9 +110,7 @@ export const BodyContent = () => {
           placeholder="작가이름 또는 시를 검색해보세요 "
         />
         <button onClick={() => searchTextHandler(author)}>검색</button>
-
         <button onClick={() => setPoemList(poemData.poems)}>전체보기</button>
-
       </div>
       <BtnWrapper>
         <Button title="시 작성" onClick={() => writePoemModalHandler(true)} />
