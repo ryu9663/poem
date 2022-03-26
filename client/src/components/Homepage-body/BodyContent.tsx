@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 
 import React, { PropsWithChildren, useEffect, useState } from "react";
 
@@ -15,7 +15,6 @@ const BodyWrapper = styled.main`
   flex-direction: column;
   align-items: center;
   .bodycontent__searchbox-wrapper {
-    /* background: red; */
     display: flex;
     margin: 80px 10px;
     width: 600px;
